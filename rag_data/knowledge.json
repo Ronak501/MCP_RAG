@@ -1,0 +1,8 @@
+[
+  {"event": "possible abuse incident", "action": "alert supervisor and log evidence"},
+  {"event": "possible arrest incident", "action": "monitor and verify lawful intervention"},
+  {"event": "possible arson incident", "action": "trigger fire emergency alert and call fire services"},
+  {"event": "possible assault incident", "action": "call police and raise high-priority alert"},
+  {"event": "person detected", "action": "monitor situation"},
+  {"event": "normal scene", "action": "continue passive monitoring"}
+]

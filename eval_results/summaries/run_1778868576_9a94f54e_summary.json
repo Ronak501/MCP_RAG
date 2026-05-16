@@ -1,0 +1,14 @@
+{
+  "run_id": "run_1778868576_9a94f54e",
+  "total_frames": 16,
+  "unique_videos": 1,
+  "decision_accuracy": 1.0,
+  "avg_inference_time_ms": 1.0,
+  "avg_frame_total_time_ms": 261.919375,
+  "avg_confidence": 0.5999999999999999,
+  "severity_distribution": {
+    "medium": 16
+  },
+  "csv_path": "eval_results\\runs\\run_1778868576_9a94f54e.csv",
+  "jsonl_path": "eval_results\\runs\\run_1778868576_9a94f54e.jsonl"
+}

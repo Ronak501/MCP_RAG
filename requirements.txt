@@ -1,0 +1,7 @@
+ultralytics
+opencv-python
+faiss-cpu
+sentence-transformers
+numpy
+google-generativeai
+python-dotenv
