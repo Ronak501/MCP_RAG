@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ultralytics import YOLO
 
-from agent import format_agent_response, reason_with_agent
+from ai.agent import format_agent_response, reason_with_agent
 from evaluation import (
     BaselineEvaluator,
     EvaluationLogger,
@@ -12,10 +12,10 @@ from evaluation import (
     expected_action_for_class,
     is_action_correct,
 )
-from mcp import execute_action
-from orchestrator import orchestrate, infer_scene_context, OrchestrationLogger
-from rag import query_rag
-from research_gap import TemporalLocalizer, compute_anomaly_score
+from ai.mcp import execute_action
+from ai.orchestrator import orchestrate, infer_scene_context
+from ai.rag import query_rag
+from ai.research_gap import TemporalLocalizer, compute_anomaly_score
 from utils import discover_videos, extract_frames
 
 model = YOLO("yolov8n.pt")

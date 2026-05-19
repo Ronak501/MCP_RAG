@@ -283,6 +283,7 @@ class EvaluationLogger:
             json.dump(summary, f, indent=2)
 
 
+
 class BaselineEvaluator:
     """Compare full system vs. simplified baselines."""
 

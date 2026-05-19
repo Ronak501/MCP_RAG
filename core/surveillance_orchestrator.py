@@ -30,10 +30,10 @@ class SurveillanceIntelligenceOrchestrator:
         Args:
             agent: Optional MCP-RAG agent for intelligent analysis
         """
-        from surveillance_engine import SurveillanceEngine
-        from multi_source_coordinator import MultiSourceCoordinator, ZoneBasedProcessor
-        from notification_system import NotificationManager
-        from surveillance_api import SurveillanceAPI
+        from core.surveillance_engine import SurveillanceEngine
+        from core.multi_source_coordinator import MultiSourceCoordinator, ZoneBasedProcessor
+        from core.notification_system import NotificationManager
+        from api.surveillance_api import SurveillanceAPI
         
         self.engine = SurveillanceEngine(agent_module=agent)
         self.coordinator = MultiSourceCoordinator(self.engine)
@@ -49,10 +49,10 @@ class SurveillanceIntelligenceOrchestrator:
         self.lock = threading.Lock()
         
         logger.info("Surveillance Intelligence Orchestrator initialized")
-    
+
     def configure_notifications(self):
         """Setup notification handlers"""
-        from notification_system import (
+        from core.notification_system import (
             NotificationChannel, LogNotificationHandler,
             FileNotificationHandler, ConsoleNotificationHandler
         )
@@ -66,15 +66,15 @@ class SurveillanceIntelligenceOrchestrator:
         self.engine.subscribe_to_alerts(self._handle_alert)
         
         logger.info("Notification system configured")
-    
+
     def load_sources_from_config(self, config_path: Path):
         """Load camera sources from configuration file"""
         self.coordinator.load_sources_from_file(config_path)
         logger.info(f"Loaded {len(self.coordinator.sources)} video sources")
-    
+
     def add_camera(self, source_id: str, source_path: str, source_type: str, **kwargs):
         """Add a camera programmatically"""
-        from multi_source_coordinator import SourceConfig
+        from core.multi_source_coordinator import SourceConfig
         
         config = SourceConfig(
             source_id=source_id,
@@ -83,10 +83,10 @@ class SurveillanceIntelligenceOrchestrator:
             **kwargs
         )
         self.coordinator.add_source(config)
-    
+
     def setup_api_server(self, host: str = "0.0.0.0", port: int = 5000):
         """Setup the REST API server"""
-        from surveillance_api import SurveillanceAPI
+        from api.surveillance_api import SurveillanceAPI
         
         self.api = SurveillanceAPI(
             self.engine,
@@ -105,7 +105,7 @@ class SurveillanceIntelligenceOrchestrator:
         
         logger.info(f"API server started on {host}:{port}")
         logger.info(f"Dashboard available at http://{host}:{port}/dashboard")
-    
+
     def _create_detection_callback(self) -> Callable:
         """Create detection callback for frame processing"""
         
@@ -132,13 +132,13 @@ class SurveillanceIntelligenceOrchestrator:
                 )
         
         return process_frame
-    
+
     def _basic_detection(self, frame, source_config):
         """Basic detection without MCP-RAG"""
         # This would integrate with YOLOv8 detection
         # For now, placeholder for basic detection
         pass
-    
+
     def _rag_detection(self, frame, source_config):
         """Detection with MCP-RAG analysis"""
         # This would call the agent for intelligent analysis
@@ -156,11 +156,11 @@ class SurveillanceIntelligenceOrchestrator:
         
         except Exception as e:
             logger.error(f"Error in RAG detection: {e}")
-    
+
     def _process_detection(self, detection: Dict, source_config):
         """Process a single detection"""
         try:
-            from surveillance_engine import DetectionEvent, AlertSeverity
+            from core.surveillance_engine import DetectionEvent, AlertSeverity
             
             event_type = detection.get("type", "Unknown")
             confidence = detection.get("confidence", 0.0)
@@ -192,18 +192,18 @@ class SurveillanceIntelligenceOrchestrator:
         
         except Exception as e:
             logger.error(f"Error processing detection: {e}")
-    
+
     async def _dispatch_notification(self, event):
         """Dispatch notification for event"""
         try:
             await self.notification_manager.send_notification(event.to_dict())
         except Exception as e:
             logger.error(f"Error dispatching notification: {e}")
-    
+
     def _handle_alert(self, event):
         """Handle alert from engine"""
         logger.info(f"Alert: {event.event_type} - {event.severity.value}")
-    
+
     def start(self):
         """Start the surveillance system"""
         with self.lock:
@@ -224,7 +224,7 @@ class SurveillanceIntelligenceOrchestrator:
         self.coordinator.start_all_sources()
         
         logger.info("Surveillance system started")
-    
+
     def stop(self):
         """Stop the surveillance system"""
         with self.lock:
@@ -238,7 +238,7 @@ class SurveillanceIntelligenceOrchestrator:
         self.coordinator.stop_all_sources()
         
         logger.info("Surveillance system stopped")
-    
+
     def get_system_status(self) -> Dict:
         """Get comprehensive system status"""
         return {
@@ -249,7 +249,7 @@ class SurveillanceIntelligenceOrchestrator:
             "zones": self.zone_processor.get_zone_stats(),
             "recent_alerts": self.engine.get_recent_alerts(10)
         }
-    
+
     def get_analytics(self) -> Dict:
         """Get system analytics and statistics"""
         engine_status = self.engine.get_status()

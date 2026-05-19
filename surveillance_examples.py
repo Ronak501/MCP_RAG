@@ -5,8 +5,8 @@ Shows how to use the complete autonomous surveillance system
 import logging
 import json
 from pathlib import Path
-from surveillance_orchestrator import create_surveillance_system
-from multi_source_coordinator import EXAMPLE_SOURCE_CONFIG
+from core.surveillance_orchestrator import create_surveillance_system
+from core.multi_source_coordinator import EXAMPLE_SOURCE_CONFIG
 
 # Configure logging
 logging.basicConfig(
@@ -65,7 +65,7 @@ def example_with_mcp_rag():
     
     try:
         # Try to import the agent
-        from agent import CrimeAnalysisAgent
+        from ai.agent import CrimeAnalysisAgent
         import os
         
         # Setup agent
@@ -143,7 +143,7 @@ def example_programmatic_setup():
     )
     
     # Configure zone rules
-    from multi_source_coordinator import ZoneBasedProcessor
+    from core.multi_source_coordinator import ZoneBasedProcessor
     system.zone_processor.register_zone_rule("entrance", {
         "high_priority": True,
         "alert_on_suspicious": True
@@ -166,7 +166,7 @@ def example_custom_alert_handlers():
     """Example 4: Custom alert handlers"""
     logger.info("=== Example 4: Custom Alert Handlers ===")
     
-    from notification_system import NotificationHandler, NotificationChannel
+    from core.notification_system import NotificationHandler, NotificationChannel
     
     # Custom email handler (example)
     class EmailAlertHandler(NotificationHandler):

@@ -5,7 +5,7 @@ import time
 import google.genai as genai
 from google.genai.types import GenerateContentConfig
 
-from config import GEMINI_API_KEY, GEMINI_MODEL
+from core.config import GEMINI_API_KEY, GEMINI_MODEL
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 

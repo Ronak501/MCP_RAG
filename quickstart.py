@@ -5,7 +5,7 @@ Run this to get started immediately
 """
 import json
 from pathlib import Path
-from multi_source_coordinator import EXAMPLE_SOURCE_CONFIG
+from core.multi_source_coordinator import EXAMPLE_SOURCE_CONFIG
 
 def main():
     print("""

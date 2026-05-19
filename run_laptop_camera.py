@@ -18,7 +18,7 @@ def run_laptop_camera_basic():
     """Run surveillance with laptop camera - basic mode"""
     logger.info("Starting surveillance system with laptop webcam...")
     
-    from surveillance_orchestrator import create_surveillance_system
+    from core.surveillance_orchestrator import create_surveillance_system
     
     # Create system
     system = create_surveillance_system(
@@ -68,7 +68,7 @@ def run_laptop_camera_with_rag():
     logger.info("Starting surveillance with MCP-RAG analysis...")
     
     try:
-        from agent import CrimeAnalysisAgent
+        from ai.agent import CrimeAnalysisAgent
         import os
         
         api_key = os.getenv("GEMINI_API_KEY")
@@ -90,7 +90,7 @@ def run_laptop_camera_with_rag():
         run_laptop_camera_basic()
         return
     
-    from surveillance_orchestrator import create_surveillance_system
+    from core.surveillance_orchestrator import create_surveillance_system
     
     # Create system with agent
     system = create_surveillance_system(
