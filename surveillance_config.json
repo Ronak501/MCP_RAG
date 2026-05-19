@@ -1,0 +1,49 @@
+{
+  "sources": [
+    {
+      "source_id": "camera_main_entrance",
+      "source_path": "rtsp://192.168.1.100:554/stream",
+      "source_type": "rtsp",
+      "enabled": true,
+      "fps": 30,
+      "resolution": [
+        1280,
+        720
+      ],
+      "stride": 30,
+      "confidence_threshold": 0.5,
+      "location": "Main Entrance",
+      "zone": "entrance"
+    },
+    {
+      "source_id": "camera_parking_lot",
+      "source_path": "data/ucf_crime/Arrest/Arrest001_x264.mp4",
+      "source_type": "file",
+      "enabled": true,
+      "fps": 30,
+      "resolution": [
+        1280,
+        720
+      ],
+      "stride": 30,
+      "confidence_threshold": 0.5,
+      "location": "Parking Lot",
+      "zone": "parking"
+    },
+    {
+      "source_id": "camera_corridor",
+      "source_path": 0,
+      "source_type": "device",
+      "enabled": false,
+      "fps": 30,
+      "resolution": [
+        1280,
+        720
+      ],
+      "stride": 30,
+      "confidence_threshold": 0.5,
+      "location": "Corridor",
+      "zone": "corridor"
+    }
+  ]
+}
