@@ -108,6 +108,11 @@ def _latest_log_summary() -> list[dict[str, Any]]:
         except Exception:
             continue
         data["_path"] = path.name
+        # Ensure missing keys have default values for template compatibility
+        if "peak_anomaly_score" not in data:
+            data["peak_anomaly_score"] = 0.0
+        if "avg_inference_time_ms" not in data:
+            data["avg_inference_time_ms"] = 0.0
         items.append(data)
     return items[:12]
 
