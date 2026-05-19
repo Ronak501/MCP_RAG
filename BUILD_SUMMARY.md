@@ -1,223 +1,51 @@
-# Autonomous Surveillance Intelligence System - Complete Build Summary
+# Flask Code Dashboard Build Summary
 
-## What We've Built
+## What Changed
 
-A **production-ready Autonomous Surveillance Intelligence System** that integrates seamlessly with your existing MCP-RAG project. This system handles real-time video monitoring, intelligent event detection, comprehensive alerting, and provides a complete API with web dashboard.
+The repository now centers on a read-only Flask dashboard for browsing code and inspecting evaluation logs.
 
-## System Architecture
+## Main Entry Point
 
-```
-Video Sources (Files, RTSP, HTTP, Webcams)
-        ↓
-    [VideoSourceManager]
-    Manages concurrent streams
-        ↓
-    [Frame Processing Pipeline]
-    Resize, normalize, prepare for analysis
-        ↓
-    ┌─────────────────┬──────────────────┐
-    ↓                 ↓
-[YOLOv8 Detection]  [MCP-RAG Analysis]
-    ↓                 ↓
-    └─────────────────┬──────────────────┘
-        ↓
-    [ZoneProcessor]
-    Apply zone rules, calculate severity
-        ↓
-    [AlertManager]
-    Create alerts, trigger escalation
-        ↓
-    [NotificationManager]
-    Route to multiple channels
-        ↓
-    ┌─────┬──────┬──────────┬────────┐
-    ↓     ↓      ↓          ↓        ↓
-   LOG  FILE  CONSOLE  WEBHOOK   EMAIL
-    ↓
-[REST API + Web Dashboard]
-Real-time monitoring interface
-```
+- `app.py` - Flask app with three views:
+  - `/` - code structure, file list, file type summary, and log summaries
+  - `/file/<path>` - source viewer with line numbers
+  - `/logs` - log summary and preview page
 
-## Core Components Created
+## Remaining Code Areas
 
-### 1. **surveillance_engine.py** (630 lines)
-Main surveillance engine with video source management and alerting
+- `ai/` - agent, RAG, MCP, orchestration, and research helpers
+- `evaluation/` - evaluation metrics and log helpers
+- `docs/` - documentation pages
 
-**Key Classes:**
-- `VideoSourceManager` - Manages multiple video streams
-- `AlertManager` - Creates and manages alerts
-- `SurveillanceEngine` - Main orchestrator
+## Removed Surveillance Code
 
-**Features:**
-- Non-blocking multi-threaded video processing
-- Thread-safe frame queues per source
-- Automatic connection recovery
-- Real-time statistics tracking
+The surveillance-specific folders and scripts were removed from the workspace:
 
-### 2. **multi_source_coordinator.py** (380 lines)
-Coordinates multiple video sources and zone-based processing
+- `core/`
+- `api/`
+- `tools/`
+- `main.py`
+- `surveillance_examples.py`
+- `run_laptop_camera.py`
+- `quickstart.py`
+- `show_logs.py`
+- `run_comparison.py`
+- `analyze_logs.py`
+- `surveillance_config.json`
+- `surveillance_config_schema.json`
+- `SURVEILLANCE_README.md`
 
-**Key Classes:**
-- `MultiSourceCoordinator` - Central video source manager
-- `ZoneBasedProcessor` - Zone-specific alert rules
-- `SourceConfig` - Camera configuration
+## How To Run
 
-**Features:**
-- Load cameras from JSON config
-- Per-zone alert severity calculation
-- Event frequency tracking
-- Source statistics and monitoring
-
-### 3. **notification_system.py** (380 lines)
-Flexible alert notification with multiple delivery channels
-
-**Key Classes:**
-- `NotificationManager` - Central notification hub
-- `NotificationHandler` - Base handler class
-- `LogNotificationHandler` - System logging
-- `FileNotificationHandler` - JSON-L file logging
-- `ConsoleNotificationHandler` - Terminal alerts
-- `WebhookNotificationHandler` - HTTP webhooks
-- `AlertEscalation` - Repeated event escalation
-
-**Features:**
-- Severity-based filtering
-- Source-based filtering
-- Event type filtering
-- Extensible handler system
-- Automatic escalation on patterns
-
-### 4. **surveillance_api.py** (420 lines)
-REST API and real-time web dashboard
-
-**Key Classes:**
-- `SurveillanceAPI` - Flask REST API server
-
-**API Endpoints:**
-- System control (start/stop)
-- Camera management (enable/disable/stats)
-- Alert retrieval and summaries
-- Notification configuration
-- Real-time dashboard
-
-**Dashboard Features:**
-- Live system status
-- Active camera monitoring
-- Alert statistics
-- Recent alerts display
-- Start/stop controls
-
-### 5. **surveillance_orchestrator.py** (320 lines)
-Main integration orchestrator combining all components
-
-**Key Classes:**
-- `SurveillanceIntelligenceOrchestrator` - Main orchestrator
-- Factory function `create_surveillance_system()`
-
-**Features:**
-- Unified system initialization
-- MCP-RAG agent integration
-- Configuration management
-- Analytics and reporting
-- Complete lifecycle management
-
-### 6. **surveillance_examples.py** (280 lines)
-Comprehensive usage examples
-
-**Examples:**
-1. Basic surveillance (file-based)
-2. With MCP-RAG integration
-3. Programmatic camera setup
-4. Custom alert handlers
-
-## Key Features Implemented
-
-### ✅ Real-Time Surveillance Monitoring
-- Concurrent processing of multiple video streams
-- Non-blocking, threaded video capture
-- Automatic frame queue management
-- Stream-specific statistics
-
-### ✅ Multi-Source Video Input
-- **File**: Local video files (MP4, AVI, etc.)
-- **RTSP**: IP cameras using RTSP protocol
-- **HTTP**: Motion JPEG and HTTP streams
-- **Device**: Local webcams and video devices
-
-### ✅ Intelligent Alert System
-- Severity-based alerts (LOW, MEDIUM, HIGH, CRITICAL)
-- Zone-based alert rules
-- Confidence threshold filtering
-- Automatic escalation on repeated events
-- Alert history and analytics
-
-### ✅ Multiple Notification Channels
-- **Log**: Python logging integration
-- **File**: Daily JSON-Lines format per severity
-- **Console**: Terminal output for critical alerts
-- **Webhook**: HTTP POST to external services
-- **Extensible**: Easy to add custom handlers
-
-### ✅ REST API with Web Dashboard
-- 15+ API endpoints
-- Real-time web dashboard
-- Camera enable/disable controls
-- Live statistics and metrics
-- Auto-updating every 2 seconds
-
-### ✅ MCP-RAG Integration
-- Seamless agent integration
-- Intelligent event analysis
-- Context-aware severity calculation
-- Leverages existing Gemini 2.5 Flash model
-
-### ✅ Zone-Based Processing
-- Define monitoring zones
-- Apply zone-specific rules
-- Zone-based event statistics
-- Priority-based processing
-
-## Configuration
-
-### Basic Configuration File
-```json
-{
-  "sources": [
-    {
-      "source_id": "camera_1",
-      "source_path": "data/ucf_crime/Assault/Assault001_x264.mp4",
-      "source_type": "file",
-      "location": "Main Entrance",
-      "zone": "entrance",
-      "stride": 30,
-      "confidence_threshold": 0.5
-    }
-  ]
-}
+```powershell
+.\.venv\Scripts\python.exe app.py
 ```
 
-### Supported Source Types
-- `file`: Local video files
-- `rtsp`: IP camera RTSP streams
-- `http`: HTTP video streams
-- `device`: Webcam/video device
+Open:
 
-## Usage Quick Start
+- `http://127.0.0.1:5000/`
+- `http://127.0.0.1:5000/logs`
 
-### 1. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Run Basic Surveillance
-```bash
-python surveillance_examples.py basic
-```
-
-### 3. Access Dashboard
-```
-http://localhost:5000/dashboard
-```
 
 ### 4. With MCP-RAG
 ```bash
