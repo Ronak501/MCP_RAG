@@ -2,16 +2,29 @@ import json
 import re
 import time
 
-import google.generativeai as genai
+import google.genai as genai
+from google.genai.types import GenerateContentConfig
 
 from config import GEMINI_API_KEY, GEMINI_MODEL
 
-genai.configure(api_key=GEMINI_API_KEY)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 
-def reason_with_agent(event_text, detections, rag_action, class_hint=None):
+def reason_with_agent(
+    event_text,
+    detections,
+    rag_action,
+    class_hint=None,
+    rag_metadata=None,
+    anomaly_score=None,
+    temporal_context=None,
+):
     """Use Gemini Agent to reason about event and provide enhanced decision."""
     start_time = time.time()
+
+    rag_metadata_text = json.dumps(rag_metadata or {}, ensure_ascii=True)
+    temporal_context_text = json.dumps(temporal_context or {}, ensure_ascii=True)
+    anomaly_text = f"{anomaly_score:.3f}" if anomaly_score is not None else "unknown"
 
     prompt = f"""You are a security incident response agent.
 
@@ -21,6 +34,9 @@ Event Description: {event_text}
 Detected Objects: {', '.join(detections) if detections else 'none'}
 Context (Incident Type): {class_hint if class_hint else 'unknown'}
 Initial RAG Recommendation: {rag_action}
+RAG Metadata: {rag_metadata_text}
+Temporal Context: {temporal_context_text}
+Current Anomaly Score: {anomaly_text}
 
 Provide a JSON response with:
 1. severity: (critical/high/medium/low) - threat level
@@ -43,8 +59,11 @@ Example format:
 Respond ONLY with valid JSON, no markdown, no extra text."""
 
     try:
-        model = genai.GenerativeModel(GEMINI_MODEL)
-        response = model.generate_content(prompt, generation_config=genai.types.GenerationConfig(temperature=0.3))
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt,
+            config=GenerateContentConfig(temperature=0.3),
+        )
         
         response_text = response.text.strip()
         if response_text.startswith("```"):
@@ -80,5 +99,6 @@ def format_agent_response(agent_decision):
         f"Severity: {agent_decision.get('severity', '?').upper()} | "
         f"Confidence: {agent_decision.get('confidence', 0):.2%} | "
         f"Action: {agent_decision.get('primary_action', 'N/A')} | "
+        f"Anomaly: {agent_decision.get('anomaly_score', 0):.2f} | "
         f"Time: {agent_decision.get('inference_time_ms', 0)}ms"
     )

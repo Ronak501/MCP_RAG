@@ -18,10 +18,19 @@ class FrameMetric:
     detections: list[str]
     event_text: str
     rag_action: str
+    rag_matched_event: str
+    rag_similarity: float
     mcp_action: str
     agent_severity: str
     agent_confidence: float
     agent_primary_action: str
+    anomaly_score: float
+    temporal_segment_start: int | None
+    temporal_segment_end: int | None
+    temporal_segment_active: bool
+    selected_tools: list[str]
+    expected_latency_ms: float
+    orchestration_notes: str
     expected_action: str
     action_correct: bool
     inference_time_ms: float
@@ -88,7 +97,10 @@ class EvaluationLogger:
         self._sum_inference_ms = 0.0
         self._sum_total_ms = 0.0
         self._sum_confidence = 0.0
+        self._sum_anomaly_score = 0.0
         self._severity_distribution = {}
+        self._peak_anomaly_score = 0.0
+        self._longest_segment = 0
 
         self._init_csv_if_needed()
         self._apply_retention_policy()
@@ -110,10 +122,19 @@ class EvaluationLogger:
             "detections": metric.detections,
             "event_text": metric.event_text,
             "rag_action": metric.rag_action,
+            "rag_matched_event": metric.rag_matched_event,
+            "rag_similarity": metric.rag_similarity,
             "mcp_action": metric.mcp_action,
             "agent_severity": metric.agent_severity,
             "agent_confidence": metric.agent_confidence,
             "agent_primary_action": metric.agent_primary_action,
+            "anomaly_score": metric.anomaly_score,
+            "temporal_segment_start": metric.temporal_segment_start,
+            "temporal_segment_end": metric.temporal_segment_end,
+            "temporal_segment_active": metric.temporal_segment_active,
+            "selected_tools": metric.selected_tools,
+            "expected_latency_ms": metric.expected_latency_ms,
+            "orchestration_notes": metric.orchestration_notes,
             "expected_action": metric.expected_action,
             "action_correct": metric.action_correct,
             "inference_time_ms": metric.inference_time_ms,
@@ -135,10 +156,19 @@ class EvaluationLogger:
                         "detections",
                         "event_text",
                         "rag_action",
+                        "rag_matched_event",
+                        "rag_similarity",
                         "mcp_action",
                         "agent_severity",
                         "agent_confidence",
                         "agent_primary_action",
+                        "anomaly_score",
+                        "temporal_segment_start",
+                        "temporal_segment_end",
+                        "temporal_segment_active",
+                        "selected_tools",
+                        "expected_latency_ms",
+                        "orchestration_notes",
                         "expected_action",
                         "action_correct",
                         "inference_time_ms",
@@ -183,10 +213,19 @@ class EvaluationLogger:
                         ", ".join(frame_data["detections"]) if frame_data["detections"] else "none",
                         frame_data["event_text"],
                         frame_data["rag_action"],
+                        frame_data["rag_matched_event"],
+                        frame_data["rag_similarity"],
                         frame_data["mcp_action"],
                         frame_data["agent_severity"],
                         frame_data["agent_confidence"],
                         frame_data["agent_primary_action"],
+                        frame_data["anomaly_score"],
+                        frame_data["temporal_segment_start"],
+                        frame_data["temporal_segment_end"],
+                        frame_data["temporal_segment_active"],
+                        ", ".join(frame_data["selected_tools"]) if frame_data["selected_tools"] else "none",
+                        frame_data["expected_latency_ms"],
+                        frame_data["orchestration_notes"],
                         frame_data["expected_action"],
                         frame_data["action_correct"],
                         frame_data["inference_time_ms"],
@@ -200,6 +239,12 @@ class EvaluationLogger:
         self._sum_inference_ms += float(metric.inference_time_ms)
         self._sum_total_ms += float(metric.frame_total_time_ms)
         self._sum_confidence += float(metric.agent_confidence)
+        self._sum_anomaly_score += float(metric.anomaly_score)
+        self._peak_anomaly_score = max(self._peak_anomaly_score, float(metric.anomaly_score))
+        if metric.temporal_segment_active:
+            segment_start = metric.temporal_segment_start or 0
+            segment_end = metric.temporal_segment_end or segment_start
+            self._longest_segment = max(self._longest_segment, segment_end - segment_start + 1)
         self._severity_distribution[metric.agent_severity] = (
             self._severity_distribution.get(metric.agent_severity, 0) + 1
         )
@@ -219,6 +264,9 @@ class EvaluationLogger:
             "avg_inference_time_ms": self._sum_inference_ms / self._count,
             "avg_frame_total_time_ms": self._sum_total_ms / self._count,
             "avg_confidence": self._sum_confidence / self._count,
+            "avg_anomaly_score": self._sum_anomaly_score / self._count,
+            "peak_anomaly_score": self._peak_anomaly_score,
+            "longest_temporal_segment": self._longest_segment,
             "severity_distribution": self._severity_distribution,
             "csv_path": str(self.csv_path) if self.log_format in {"csv", "both"} else None,
             "jsonl_path": str(self.jsonl_path) if self.log_format in {"jsonl", "both"} else None,
@@ -248,6 +296,7 @@ class BaselineEvaluator:
             "secondary_actions": [],
             "justification": "RAG-only baseline",
             "additional_notes": "No agent reasoning",
+            "anomaly_score": 0.35,
             "inference_time_ms": 1.0,
         }
 
@@ -272,5 +321,6 @@ class BaselineEvaluator:
             "secondary_actions": [],
             "justification": "Detection + class label baseline",
             "additional_notes": "No RAG or agent",
+            "anomaly_score": 0.42 if detections else 0.12,
             "inference_time_ms": 0.5,
         }

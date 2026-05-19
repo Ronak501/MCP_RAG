@@ -1,3 +1,7 @@
 data/
 
 .env
+
+eval_results
+
+__pycache__/**/*

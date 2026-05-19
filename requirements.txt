@@ -3,5 +3,5 @@ opencv-python
 faiss-cpu
 sentence-transformers
 numpy
-google-generativeai
+google-genai
 python-dotenv

@@ -22,8 +22,23 @@ index = faiss.IndexFlatL2(embeddings_np.shape[1])
 index.add(embeddings_np)
 
 
-def query_rag(query):
+def query_rag(query, return_metadata=False):
     q_emb = model.encode([query])
     q_emb_np = np.array(q_emb, dtype="float32")
-    _, indices = index.search(q_emb_np, k=1)
-    return actions[indices[0][0]]
+    distances, indices = index.search(q_emb_np, k=1)
+
+    best_index = int(indices[0][0])
+    best_distance = float(distances[0][0])
+    best_action = actions[best_index]
+    best_event = texts[best_index]
+    similarity = 1.0 / (1.0 + best_distance)
+
+    if return_metadata:
+        return {
+            "action": best_action,
+            "matched_event": best_event,
+            "distance": best_distance,
+            "similarity": similarity,
+        }
+
+    return best_action
