@@ -2,6 +2,8 @@ data/
 
 .env
 
-eval_results
+eval_results/
+eval_results/runs/
+eval_results/summaries/
 
 __pycache__/**/*

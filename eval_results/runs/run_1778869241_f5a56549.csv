@@ -1,1 +1,0 @@
-run_id,baseline_mode,timestamp,video_path,class_hint,frame_index,detections,event_text,rag_action,mcp_action,agent_severity,agent_confidence,agent_primary_action,expected_action,action_correct,inference_time_ms,frame_total_time_ms
